@@ -1,0 +1,126 @@
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --radius: 0.625rem;
+
+    /* Finnxstar Brand Palette */
+    /* Navy #0B1F35 → oklch ~0.185 0.042 243 */
+    /* Gold #D4AF37 → oklch ~0.745 0.137 85 */
+    /* White #FFFFFF → oklch 1 0 0 */
+    /* Light gray #E6E8EC → oklch ~0.927 0.006 250 */
+    /* Muted gray #5B6775 → oklch ~0.488 0.022 250 */
+    /* Dark heading #0F172A → oklch ~0.158 0.034 255 */
+
+    --background: 1 0 0;
+    --foreground: 0.158 0.034 255;
+    --card: 1 0 0;
+    --card-foreground: 0.158 0.034 255;
+    --popover: 1 0 0;
+    --popover-foreground: 0.158 0.034 255;
+
+    /* Primary = Navy */
+    --primary: 0.185 0.042 243;
+    --primary-foreground: 1 0 0;
+
+    /* Secondary = light gray */
+    --secondary: 0.927 0.006 250;
+    --secondary-foreground: 0.185 0.042 243;
+
+    /* Muted */
+    --muted: 0.96 0.004 250;
+    --muted-foreground: 0.488 0.022 250;
+
+    /* Accent = Gold */
+    --accent: 0.745 0.137 85;
+    --accent-foreground: 0.158 0.034 255;
+
+    --destructive: 0.577 0.245 27.325;
+    --destructive-foreground: 0.985 0 0;
+
+    --border: 0.927 0.006 250;
+    --input: 0.927 0.006 250;
+    --ring: 0.185 0.042 243;
+
+    --chart-1: 0.646 0.222 41.116;
+    --chart-2: 0.6 0.118 184.704;
+    --chart-3: 0.398 0.07 227.392;
+    --chart-4: 0.828 0.189 84.429;
+    --chart-5: 0.769 0.188 70.08;
+
+    --sidebar: 0.985 0 0;
+    --sidebar-foreground: 0.145 0 0;
+    --sidebar-primary: 0.205 0 0;
+    --sidebar-primary-foreground: 0.985 0 0;
+    --sidebar-accent: 0.97 0 0;
+    --sidebar-accent-foreground: 0.205 0 0;
+    --sidebar-border: 0.922 0 0;
+    --sidebar-ring: 0.708 0 0;
+
+    /* Custom brand vars */
+    --navy: 0.185 0.042 243;
+    --gold: 0.745 0.137 85;
+    --gold-dark: 0.62 0.12 82;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: "Plus Jakarta Sans", sans-serif;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: "Playfair Display", serif;
+  }
+
+  .text-navy {
+    color: oklch(var(--navy));
+  }
+
+  .bg-navy {
+    background-color: oklch(var(--navy));
+  }
+
+  .text-gold {
+    color: oklch(var(--gold));
+  }
+
+  .bg-gold {
+    background-color: oklch(var(--gold));
+  }
+
+  .border-gold {
+    border-color: oklch(var(--gold));
+  }
+
+  .btn-gold {
+    background-color: oklch(var(--gold));
+    color: oklch(0.158 0.034 255);
+    font-weight: 600;
+    transition: background-color 0.2s, transform 0.1s;
+  }
+
+  .btn-gold:hover {
+    background-color: oklch(var(--gold-dark));
+    transform: translateY(-1px);
+  }
+
+  .section-heading {
+    font-family: "Playfair Display", serif;
+    font-weight: 700;
+    color: oklch(var(--navy));
+  }
+}
