@@ -128,10 +128,10 @@ function Navbar() {
           <div className="hidden lg:flex items-center gap-4">
             <div className="text-right">
               <a
-                href="tel:+97140000000"
+                href="tel:+971556805676"
                 className="text-gold text-sm font-semibold block"
               >
-                +971 4 000 0000
+                +971 55 680 5676
               </a>
               <span className="text-white/60 text-xs">Free Consultation</span>
             </div>
@@ -223,78 +223,121 @@ function HeroSection() {
   return (
     <section
       id="home"
-      className="relative min-h-screen flex items-center"
-      style={{
-        backgroundImage: `url('/assets/generated/hero-dubai-skyline.dim_1600x900.jpg')`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}
+      className="relative min-h-screen flex items-center bg-navy"
     >
-      <div className="absolute inset-0 bg-navy/75" />
-      <div className="absolute inset-0 bg-gradient-to-r from-navy/90 via-navy/60 to-transparent" />
+      {/* Subtle gradient overlay for depth */}
+      <div className="absolute inset-0 bg-gradient-to-br from-navy via-navy/95 to-navy/80" />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 pt-32">
-        <motion.div
-          initial={{ opacity: 0, y: 32 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, ease: "easeOut" }}
-          className="max-w-xl"
-        >
-          <div className="inline-flex items-center gap-2 bg-gold/20 border border-gold/40 rounded-full px-4 py-1.5 mb-6">
-            <Star className="w-3.5 h-3.5 text-gold fill-gold" />
-            <span className="text-gold text-xs font-semibold tracking-wide uppercase">
-              Dubai's Trusted Mortgage Experts
-            </span>
-          </div>
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 pt-32 w-full">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          {/* Left column — content */}
+          <motion.div
+            initial={{ opacity: 0, y: 32 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, ease: "easeOut" }}
+          >
+            <div className="inline-flex items-center gap-2 bg-gold/20 border border-gold/40 rounded-full px-4 py-1.5 mb-6">
+              <Star className="w-3.5 h-3.5 text-gold fill-gold" />
+              <span className="text-gold text-xs font-semibold tracking-wide uppercase">
+                Dubai's Trusted Mortgage Experts
+              </span>
+            </div>
 
-          <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight mb-5">
-            Your Trusted
-            <span className="block text-gold">Mortgage Broker</span>
-            in Dubai
-          </h1>
+            <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight mb-5">
+              Your Trusted
+              <span className="block text-gold">Mortgage Broker</span>
+              in Dubai
+            </h1>
 
-          <p className="text-white/80 text-lg leading-relaxed mb-8">
-            Expert guidance for residents, expats &amp; non-residents navigating
-            the UAE property market. We secure the best rates from 25+ lenders.
-          </p>
+            <p className="text-white/80 text-lg leading-relaxed mb-8">
+              Expert guidance for residents, expats &amp; non-residents
+              navigating the UAE property market. We secure the best rates from
+              25+ lenders.
+            </p>
 
-          <div className="flex flex-col sm:flex-row gap-3">
-            <Button
-              type="button"
-              onClick={() => scrollTo("#contact")}
-              data-ocid="hero.primary_button"
-              className="btn-gold px-8 py-3 text-base rounded-full shadow-lg"
-            >
-              Get a Free Consultation
-              <ArrowRight className="ml-2 w-4 h-4" />
-            </Button>
-            <Button
-              type="button"
-              onClick={() => scrollTo("#services")}
-              data-ocid="hero.secondary_button"
-              variant="outline"
-              className="px-8 py-3 text-base rounded-full border-white/40 text-white bg-white/10 hover:bg-white/20"
-            >
-              View Services
-              <ChevronRight className="ml-2 w-4 h-4" />
-            </Button>
-          </div>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Button
+                type="button"
+                onClick={() => scrollTo("#contact")}
+                data-ocid="hero.primary_button"
+                className="btn-gold px-8 py-3 text-base rounded-full shadow-lg"
+              >
+                Get a Free Consultation
+                <ArrowRight className="ml-2 w-4 h-4" />
+              </Button>
+              <Button
+                type="button"
+                onClick={() => scrollTo("#services")}
+                data-ocid="hero.secondary_button"
+                variant="outline"
+                className="px-8 py-3 text-base rounded-full border-white/40 text-white bg-white/10 hover:bg-white/20"
+              >
+                View Services
+                <ChevronRight className="ml-2 w-4 h-4" />
+              </Button>
+            </div>
 
-          <div className="mt-12 grid grid-cols-3 gap-6">
-            {[
-              { label: "Lender Partners", value: "25+" },
-              { label: "Applications Processed", value: "1,200+" },
-              { label: "Client Satisfaction", value: "98%" },
-            ].map((stat) => (
-              <div key={stat.label}>
-                <div className="font-display text-2xl font-bold text-gold">
-                  {stat.value}
+            <div className="mt-12 grid grid-cols-3 gap-6">
+              {[
+                { label: "Lender Partners", value: "25+" },
+                { label: "Applications Processed", value: "1,200+" },
+                { label: "Client Satisfaction", value: "98%" },
+              ].map((stat) => (
+                <div key={stat.label}>
+                  <div className="font-display text-2xl font-bold text-gold">
+                    {stat.value}
+                  </div>
+                  <div className="text-white/60 text-xs mt-1">{stat.label}</div>
                 </div>
-                <div className="text-white/60 text-xs mt-1">{stat.label}</div>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* Right column — hero image */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
+            className="hidden lg:flex items-center justify-center"
+          >
+            <div className="relative w-full">
+              {/* Glow effect behind image */}
+              <div className="absolute inset-0 rounded-2xl bg-gold/10 blur-2xl scale-105" />
+              <img
+                src="/assets/generated/hero-dubai-skyline.dim_1600x900.jpg"
+                alt="Dubai skyline — Finnxstar mortgage brokers"
+                className="relative w-full h-auto object-cover rounded-2xl shadow-2xl border border-white/10"
+                style={{ maxHeight: "520px", objectFit: "cover" }}
+              />
+              {/* Floating badge overlay */}
+              <div className="absolute bottom-5 left-5 bg-navy/90 backdrop-blur-sm border border-gold/30 rounded-xl px-4 py-3 flex items-center gap-3">
+                <div className="w-9 h-9 bg-gold/20 rounded-lg flex items-center justify-center">
+                  <Award className="w-5 h-5 text-gold" />
+                </div>
+                <div>
+                  <p className="text-white text-xs font-semibold">
+                    Award-Winning Broker
+                  </p>
+                  <p className="text-white/60 text-xs">Dubai 2022 &amp; 2023</p>
+                </div>
               </div>
-            ))}
-          </div>
-        </motion.div>
+            </div>
+          </motion.div>
+
+          {/* Mobile image — shown below text on small screens */}
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, ease: "easeOut", delay: 0.35 }}
+            className="lg:hidden"
+          >
+            <img
+              src="/assets/generated/hero-dubai-skyline.dim_1600x900.jpg"
+              alt="Dubai skyline — Finnxstar mortgage brokers"
+              className="w-full h-52 object-cover rounded-2xl shadow-xl border border-white/10"
+            />
+          </motion.div>
+        </div>
       </div>
     </section>
   );
@@ -819,17 +862,17 @@ function ContactSection() {
               {[
                 {
                   icon: <Phone className="w-5 h-5" />,
-                  label: "+971 4 000 0000",
-                  href: "tel:+97140000000",
+                  label: "+971 55 680 5676",
+                  href: "tel:+971556805676",
                 },
                 {
                   icon: <Mail className="w-5 h-5" />,
-                  label: "info@finnxstar.com",
-                  href: "mailto:info@finnxstar.com",
+                  label: "hemant@finnxstar.com",
+                  href: "mailto:hemant@finnxstar.com",
                 },
                 {
                   icon: <MapPin className="w-5 h-5" />,
-                  label: "DIFC, Dubai, UAE",
+                  label: "1st Floor, Opal Tower Business Bay, Dubai",
                   href: "#",
                 },
               ].map((contact) => (
