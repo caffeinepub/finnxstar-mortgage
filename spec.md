@@ -1,26 +1,22 @@
 # Finnxstar Mortgage
 
 ## Current State
-A single-page marketing website with sections: hero, services, about, how it works, eligibility, testimonials, FAQ, and a lead capture form. Backend stores leads submitted through the form. No blog or content management exists.
+The blog admin (`AdminBlogPage.tsx`) uses a plain `<Textarea>` for post content. No formatting is available. `BlogPostPage.tsx` renders content as plain paragraphs split by newlines.
 
 ## Requested Changes (Diff)
 
 ### Add
-- Blog post data type in backend: id, title, excerpt, content, author, imageUrl, category, publishedAt
-- Backend functions: createPost (admin only), getAllPosts (public), getPost by id (public), deletePost (admin only)
-- Public /blog page listing all published posts with cards (title, excerpt, date, category)
-- Public /blog/:id page showing full blog post content
-- Admin /admin/blog page (protected by authorization) for creating and managing blog posts
-- Blog link in the main navigation
+- Rich text editor (contenteditable-based) in the blog admin with a toolbar: Bold, Italic, Underline, font size selector (Small/Normal/Large/Heading), ordered list, unordered list, hyperlink insertion, and a clear-format option.
+- The editor stores content as HTML.
 
 ### Modify
-- Nav bar: add "Blog" link
-- App routing: support /blog and /blog/:id and /admin/blog routes
+- Replace the `<Textarea>` for "Content" field in `AdminBlogPage.tsx` with the new rich text editor component.
+- Update `BlogPostPage.tsx` to render post content using `dangerouslySetInnerHTML` so HTML formatting (bold, lists, links, etc.) displays correctly.
 
 ### Remove
-- Nothing removed
+- The old plain-text paragraph-splitting render logic in `BlogPostPage.tsx`.
 
 ## Implementation Plan
-1. Select `authorization` component for admin-protected blog management
-2. Update Motoko backend to add BlogPost type and CRUD functions with admin role guard
-3. Update frontend: add routing, public blog list page, blog post detail page, admin blog editor page, update nav
+1. Create `src/frontend/src/components/RichTextEditor.tsx` -- a self-contained contenteditable editor with a formatting toolbar.
+2. Import and use `RichTextEditor` in `AdminBlogPage.tsx` replacing the content `<Textarea>`.
+3. Update `BlogPostPage.tsx` content renderer to use `dangerouslySetInnerHTML={{ __html: post.content }}`.

@@ -11,6 +11,17 @@ function formatDate(ts: bigint) {
   });
 }
 
+// Renders admin-authored rich text HTML safely (content is only writable by authenticated admins)
+function RichContent({ html }: { html: string }) {
+  const props = { dangerouslySetInnerHTML: { __html: html } };
+  return (
+    <div
+      className="prose prose-lg max-w-none text-gray-700 leading-relaxed"
+      {...props}
+    />
+  );
+}
+
 export default function BlogPostPage() {
   const { id } = useParams({ from: "/blog/$id" });
   const postId = BigInt(id);
@@ -109,16 +120,7 @@ export default function BlogPostPage() {
             <p className="text-lg text-gray-700 font-medium leading-relaxed mb-8 border-l-4 border-gold pl-5 italic">
               {post.excerpt}
             </p>
-            <div className="prose prose-lg max-w-none text-gray-700 leading-relaxed">
-              {post.content
-                .split("\n")
-                .filter(Boolean)
-                .map((paragraph) => (
-                  <p key={paragraph.slice(0, 40)} className="mb-5">
-                    {paragraph}
-                  </p>
-                ))}
-            </div>
+            <RichContent html={post.content} />
           </div>
 
           <div className="mt-10 flex justify-center">

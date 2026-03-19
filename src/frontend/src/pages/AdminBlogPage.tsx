@@ -13,6 +13,8 @@ import {
   AlertTriangle,
   BookOpen,
   Calendar,
+  CheckCircle2,
+  Copy,
   Loader2,
   Lock,
   LogIn,
@@ -23,6 +25,7 @@ import {
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { toast } from "sonner";
+import RichTextEditor from "../components/RichTextEditor";
 import { useInternetIdentity } from "../hooks/useInternetIdentity";
 import {
   useCreatePost,
@@ -68,6 +71,16 @@ export default function AdminBlogPage() {
 
   const [form, setForm] = useState(EMPTY_FORM);
   const [showForm, setShowForm] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const principalId = identity?.getPrincipal().toText() ?? "";
+
+  function copyPrincipal() {
+    navigator.clipboard.writeText(principalId).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 4000);
+    });
+  }
 
   function setField(field: string, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -156,15 +169,84 @@ export default function AdminBlogPage() {
     return (
       <div
         data-ocid="admin.error_state"
-        className="min-h-screen bg-gray-50 flex items-center justify-center pt-20"
+        className="min-h-screen bg-gray-50 flex items-center justify-center pt-20 px-4"
       >
-        <div className="bg-white rounded-2xl shadow p-10 max-w-md w-full text-center">
-          <AlertTriangle className="w-14 h-14 text-yellow-500 mx-auto mb-4" />
-          <h2 className="section-heading text-2xl mb-2">Unauthorized</h2>
-          <p className="text-gray-500">
-            Your account does not have admin permissions for this dashboard.
-          </p>
-        </div>
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="bg-white rounded-2xl shadow-lg p-8 max-w-lg w-full"
+        >
+          {/* Amber instruction banner */}
+          <div className="bg-amber-50 border border-amber-300 rounded-xl p-4 mb-6 flex gap-3 items-start">
+            <AlertTriangle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
+            <p className="text-amber-800 text-sm font-medium leading-snug">
+              To get admin access, copy your Principal ID below and send it to
+              your <span className="font-bold">Finnxstar support contact</span>.
+            </p>
+          </div>
+
+          {/* Heading */}
+          <div className="text-center mb-6">
+            <AlertTriangle className="w-12 h-12 text-yellow-500 mx-auto mb-3" />
+            <h2 className="section-heading text-2xl mb-1">Unauthorized</h2>
+            <p className="text-gray-500 text-sm">
+              Your account does not have admin permissions for this dashboard.
+            </p>
+          </div>
+
+          {/* Principal ID box */}
+          <div className="bg-gray-50 border-2 border-navy/20 rounded-xl p-5">
+            <p className="text-sm font-bold text-navy uppercase tracking-wider mb-3">
+              Your Principal ID
+            </p>
+
+            {principalId === "" ? (
+              <div className="flex items-center justify-center py-4">
+                <Loader2 className="w-6 h-6 text-navy animate-spin" />
+                <span className="ml-2 text-sm text-gray-400">
+                  Loading your ID...
+                </span>
+              </div>
+            ) : (
+              <div className="bg-white border border-gray-200 rounded-lg px-4 py-3 mb-4">
+                <p className="font-mono text-base font-bold text-navy break-all leading-relaxed select-all">
+                  {principalId}
+                </p>
+              </div>
+            )}
+
+            {/* Full-width copy button */}
+            <Button
+              data-ocid="admin.primary_button"
+              type="button"
+              onClick={copyPrincipal}
+              disabled={principalId === ""}
+              className="w-full btn-gold rounded-xl py-3 text-base font-semibold"
+            >
+              {copied ? (
+                <CheckCircle2 className="mr-2 w-5 h-5" />
+              ) : (
+                <Copy className="mr-2 w-5 h-5" />
+              )}
+              {copied ? "Copied!" : "Copy Principal ID to Clipboard"}
+            </Button>
+
+            {/* Success message after copy */}
+            <AnimatePresence>
+              {copied && (
+                <motion.p
+                  initial={{ opacity: 0, y: -4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  className="text-green-600 text-sm font-semibold text-center mt-3"
+                >
+                  ✓ Copied! Now paste it in the chat to get admin access.
+                </motion.p>
+              )}
+            </AnimatePresence>
+          </div>
+        </motion.div>
       </div>
     );
   }
@@ -294,13 +376,9 @@ export default function AdminBlogPage() {
 
                   <div className="space-y-1.5">
                     <Label htmlFor="content">Content *</Label>
-                    <Textarea
-                      id="content"
-                      data-ocid="admin.editor"
-                      placeholder="Full article content. Use new lines to separate paragraphs."
-                      rows={10}
+                    <RichTextEditor
                       value={form.content}
-                      onChange={(e) => setField("content", e.target.value)}
+                      onChange={(html) => setField("content", html)}
                     />
                   </div>
 

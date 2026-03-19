@@ -4,6 +4,7 @@ import List "mo:core/List";
 import Map "mo:core/Map";
 import Nat "mo:core/Nat";
 import Runtime "mo:core/Runtime";
+import Principal "mo:core/Principal";
 
 import AccessControl "authorization/access-control";
 import MixinAuthorization "authorization/MixinAuthorization";
@@ -12,6 +13,11 @@ import MixinAuthorization "authorization/MixinAuthorization";
 actor {
   let accessControlState = AccessControl.initState();
   include MixinAuthorization(accessControlState);
+
+  // Seed the owner's principal as admin on first deploy
+  let ownerPrincipal = Principal.fromText("ewdvf-tqdpb-buvhb-ymfy4-b3k7w-fhtdv-hlwlz-zcnsm-ufko2-5phm3-kae");
+  accessControlState.userRoles.add(ownerPrincipal, #admin);
+  accessControlState.adminAssigned := true;
 
   type Lead = {
     name : Text;
