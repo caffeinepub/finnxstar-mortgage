@@ -12,11 +12,28 @@ import type { Principal } from '@icp-sdk/core/principal';
 
 export interface BlogPost {
   'id' : bigint,
+  'metaDescription' : string,
   'title' : string,
   'content' : string,
+  'metaKeywords' : string,
+  'slug' : string,
   'publishedAt' : bigint,
   'author' : string,
   'imageUrl' : string,
+  'metaTitle' : string,
+  'excerpt' : string,
+  'category' : string,
+}
+export interface BlogPostInput {
+  'metaDescription' : string,
+  'title' : string,
+  'content' : string,
+  'metaKeywords' : string,
+  'slug' : string,
+  'publishedAt' : bigint,
+  'author' : string,
+  'imageUrl' : string,
+  'metaTitle' : string,
   'excerpt' : string,
   'category' : string,
 }
@@ -27,23 +44,26 @@ export interface Lead {
   'timestamp' : bigint,
   'phone' : string,
 }
+export interface UserProfile { 'name' : string }
 export type UserRole = { 'admin' : null } |
   { 'user' : null } |
   { 'guest' : null };
 export interface _SERVICE {
   '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
-  'createPost' : ActorMethod<
-    [string, string, string, string, string, string, bigint],
-    BlogPost
-  >,
+  'createPost' : ActorMethod<[BlogPostInput], BlogPost>,
   'deletePost' : ActorMethod<[bigint], undefined>,
   'getAllLeads' : ActorMethod<[], Array<Lead>>,
   'getAllPosts' : ActorMethod<[], Array<BlogPost>>,
+  'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
   'getPost' : ActorMethod<[bigint], [] | [BlogPost]>,
+  'getPostBySlug' : ActorMethod<[string], [] | [BlogPost]>,
+  'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
+  'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
   'submitLead' : ActorMethod<[string, string, string, string, bigint], boolean>,
+  'updatePost' : ActorMethod<[bigint, BlogPostInput], BlogPost>,
 }
 export declare const idlService: IDL.ServiceClass;
 export declare const idlInitArgs: IDL.Type[];

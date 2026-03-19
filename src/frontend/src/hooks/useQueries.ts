@@ -3,7 +3,6 @@ import { useActor } from "./useActor";
 
 export function useSubmitLead() {
   const { actor } = useActor();
-
   return useMutation({
     mutationFn: async (data: {
       name: string;
@@ -47,6 +46,18 @@ export function useGetPost(id: bigint | undefined) {
   });
 }
 
+export function useGetPostBySlug(slug: string | undefined) {
+  const { actor, isFetching } = useActor();
+  return useQuery({
+    queryKey: ["post-slug", slug],
+    queryFn: async () => {
+      if (!actor || !slug) return null;
+      return actor.getPostBySlug(slug);
+    },
+    enabled: !!actor && !isFetching && !!slug,
+  });
+}
+
 export function useIsCallerAdmin() {
   const { actor, isFetching } = useActor();
   return useQuery({
@@ -70,17 +81,61 @@ export function useCreatePost() {
       author: string;
       imageUrl: string;
       category: string;
+      slug: string;
+      metaTitle: string;
+      metaDescription: string;
+      metaKeywords: string;
     }) => {
       if (!actor) throw new Error("Not connected");
-      return actor.createPost(
-        data.title,
-        data.excerpt,
-        data.content,
-        data.author,
-        data.imageUrl,
-        data.category,
-        BigInt(Date.now()),
-      );
+      return actor.createPost({
+        title: data.title,
+        excerpt: data.excerpt,
+        content: data.content,
+        author: data.author,
+        imageUrl: data.imageUrl,
+        category: data.category,
+        publishedAt: BigInt(Date.now()),
+        slug: data.slug,
+        metaTitle: data.metaTitle,
+        metaDescription: data.metaDescription,
+        metaKeywords: data.metaKeywords,
+      });
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["posts"] }),
+  });
+}
+
+export function useUpdatePost() {
+  const { actor } = useActor();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (data: {
+      id: bigint;
+      title: string;
+      excerpt: string;
+      content: string;
+      author: string;
+      imageUrl: string;
+      category: string;
+      slug: string;
+      metaTitle: string;
+      metaDescription: string;
+      metaKeywords: string;
+    }) => {
+      if (!actor) throw new Error("Not connected");
+      return actor.updatePost(data.id, {
+        title: data.title,
+        excerpt: data.excerpt,
+        content: data.content,
+        author: data.author,
+        imageUrl: data.imageUrl,
+        category: data.category,
+        publishedAt: BigInt(Date.now()),
+        slug: data.slug,
+        metaTitle: data.metaTitle,
+        metaDescription: data.metaDescription,
+        metaKeywords: data.metaKeywords,
+      });
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["posts"] }),
   });

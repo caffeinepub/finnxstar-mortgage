@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://finnxstar.com/sitemap.xml
+Sitemap: https://mortgage-broker-dubai-kqq.caffeine.xyz/sitemap.xml

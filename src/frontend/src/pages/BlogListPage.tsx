@@ -72,8 +72,8 @@ function PostCard({ post, index }: { post: BlogPost; index: number }) {
             </span>
           </div>
           <Link
-            to="/blog/$id"
-            params={{ id: post.id.toString() }}
+            to="/blog/$slug"
+            params={{ slug: post.slug }}
             data-ocid={`blog.link.${index + 1}`}
             className="flex items-center gap-1 text-xs font-semibold text-navy hover:text-gold transition-colors"
           >

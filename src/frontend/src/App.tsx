@@ -1140,7 +1140,7 @@ const blogListRoute = createRoute({
 
 const blogPostRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: "/blog/$id",
+  path: "/blog/$slug",
   component: BlogPostPage,
 });
 

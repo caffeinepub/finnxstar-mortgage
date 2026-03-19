@@ -1,7 +1,31 @@
 import { Link, useParams } from "@tanstack/react-router";
 import { ArrowLeft, BookOpen, Calendar, Tag, User } from "lucide-react";
 import { motion } from "motion/react";
-import { useGetPost } from "../hooks/useQueries";
+import { useEffect } from "react";
+import { useGetPostBySlug } from "../hooks/useQueries";
+
+function setMeta(name: string, content: string) {
+  let el = document.querySelector(
+    `meta[name="${name}"]`,
+  ) as HTMLMetaElement | null;
+  if (!el) {
+    el = document.createElement("meta");
+    el.name = name;
+    document.head.appendChild(el);
+  }
+  el.content = content;
+}
+function setOgMeta(property: string, content: string) {
+  let el = document.querySelector(
+    `meta[property="${property}"]`,
+  ) as HTMLMetaElement | null;
+  if (!el) {
+    el = document.createElement("meta");
+    el.setAttribute("property", property);
+    document.head.appendChild(el);
+  }
+  el.content = content;
+}
 
 function formatDate(ts: bigint) {
   return new Date(Number(ts)).toLocaleDateString("en-AE", {
@@ -11,7 +35,6 @@ function formatDate(ts: bigint) {
   });
 }
 
-// Renders admin-authored rich text HTML safely (content is only writable by authenticated admins)
 function RichContent({ html }: { html: string }) {
   const props = { dangerouslySetInnerHTML: { __html: html } };
   return (
@@ -23,9 +46,21 @@ function RichContent({ html }: { html: string }) {
 }
 
 export default function BlogPostPage() {
-  const { id } = useParams({ from: "/blog/$id" });
-  const postId = BigInt(id);
-  const { data: post, isLoading } = useGetPost(postId);
+  const { slug } = useParams({ from: "/blog/$slug" });
+  const { data: post, isLoading } = useGetPostBySlug(slug);
+
+  useEffect(() => {
+    if (post) {
+      document.title = post.metaTitle || `${post.title} | Finnxstar`;
+      setMeta("description", post.metaDescription || post.excerpt);
+      setMeta("keywords", post.metaKeywords);
+      setOgMeta("og:title", post.metaTitle || post.title);
+      setOgMeta("og:description", post.metaDescription || post.excerpt);
+    }
+    return () => {
+      document.title = "Finnxstar | Dubai Mortgage Broker";
+    };
+  }, [post]);
 
   if (isLoading) {
     return (
@@ -65,7 +100,6 @@ export default function BlogPostPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Hero */}
       <div className="bg-navy pt-24 pb-10">
         <div className="max-w-3xl mx-auto px-4 sm:px-6">
           <motion.div
@@ -100,8 +134,6 @@ export default function BlogPostPage() {
           </motion.div>
         </div>
       </div>
-
-      {/* Content */}
       <main className="max-w-3xl mx-auto px-4 sm:px-6 py-12">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -115,14 +147,12 @@ export default function BlogPostPage() {
               className="w-full h-72 object-cover rounded-2xl mb-10 shadow-md"
             />
           )}
-
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 sm:p-12">
             <p className="text-lg text-gray-700 font-medium leading-relaxed mb-8 border-l-4 border-gold pl-5 italic">
               {post.excerpt}
             </p>
             <RichContent html={post.content} />
           </div>
-
           <div className="mt-10 flex justify-center">
             <Link
               to="/blog"

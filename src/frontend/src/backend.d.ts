@@ -16,13 +16,33 @@ export interface Lead {
 }
 export interface BlogPost {
     id: bigint;
+    metaDescription: string;
     title: string;
     content: string;
+    metaKeywords: string;
+    slug: string;
     publishedAt: bigint;
     author: string;
     imageUrl: string;
+    metaTitle: string;
     excerpt: string;
     category: string;
+}
+export interface BlogPostInput {
+    metaDescription: string;
+    title: string;
+    content: string;
+    metaKeywords: string;
+    slug: string;
+    publishedAt: bigint;
+    author: string;
+    imageUrl: string;
+    metaTitle: string;
+    excerpt: string;
+    category: string;
+}
+export interface UserProfile {
+    name: string;
 }
 export enum UserRole {
     admin = "admin",
@@ -31,12 +51,17 @@ export enum UserRole {
 }
 export interface backendInterface {
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
-    createPost(title: string, excerpt: string, content: string, author: string, imageUrl: string, category: string, publishedAt: bigint): Promise<BlogPost>;
+    createPost(input: BlogPostInput): Promise<BlogPost>;
     deletePost(id: bigint): Promise<void>;
     getAllLeads(): Promise<Array<Lead>>;
     getAllPosts(): Promise<Array<BlogPost>>;
+    getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
     getPost(id: bigint): Promise<BlogPost | null>;
+    getPostBySlug(slug: string): Promise<BlogPost | null>;
+    getUserProfile(user: Principal): Promise<UserProfile | null>;
     isCallerAdmin(): Promise<boolean>;
+    saveCallerUserProfile(profile: UserProfile): Promise<void>;
     submitLead(name: string, email: string, phone: string, loanType: string, timestamp: bigint): Promise<boolean>;
+    updatePost(id: bigint, input: BlogPostInput): Promise<BlogPost>;
 }
