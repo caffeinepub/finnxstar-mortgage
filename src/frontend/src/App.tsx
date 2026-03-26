@@ -51,6 +51,8 @@ import { useSubmitLead } from "./hooks/useQueries";
 import AdminBlogPage from "./pages/AdminBlogPage";
 import BlogListPage from "./pages/BlogListPage";
 import BlogPostPage from "./pages/BlogPostPage";
+import SitemapPage from "./pages/SitemapPage";
+import SitemapXmlPage from "./pages/SitemapXmlPage";
 
 const NAV_LINKS = [
   { label: "Home", href: "#home" },
@@ -1095,10 +1097,70 @@ function Footer() {
   );
 }
 
+function FeaturedPostSection() {
+  return (
+    <section className="py-16 bg-white">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+        >
+          <p className="text-gold text-xs font-bold tracking-widest uppercase mb-8 text-center">
+            Featured Article
+          </p>
+          <div className="bg-gray-50 rounded-2xl overflow-hidden border border-gray-100 shadow-sm flex flex-col lg:flex-row">
+            <div className="lg:w-1/2 shrink-0">
+              <img
+                src="/assets/generated/dubai-mortgage-brokers.dim_800x450.jpg"
+                alt="List of 10 Best Mortgage Brokers in Dubai, UAE"
+                className="w-full h-64 lg:h-full object-cover"
+              />
+            </div>
+            <div className="flex flex-col justify-center p-8 lg:p-10 lg:w-1/2">
+              <span className="inline-block bg-gold/15 text-yellow-800 text-xs font-semibold px-3 py-1 rounded-full mb-4 self-start">
+                Dubai Real Estate
+              </span>
+              <h2 className="font-display text-2xl font-bold text-navy mb-4 leading-snug">
+                <a
+                  href="https://www.finnxstar.com/list-of-10-best-mortgage-brokers-in-dubai-uae/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  data-ocid="featured.link"
+                  className="hover:text-gold transition-colors"
+                >
+                  List of 10 Best Mortgage Brokers in Dubai, UAE
+                </a>
+              </h2>
+              <p className="text-gray-600 leading-relaxed mb-6 text-sm">
+                Navigating the mortgage market in Dubai can be overwhelming.
+                Here&apos;s our curated guide to the top 10 mortgage brokers in
+                Dubai who can help you secure the best rates for your home
+                purchase or investment property.
+              </p>
+              <a
+                href="https://www.finnxstar.com/list-of-10-best-mortgage-brokers-in-dubai-uae/"
+                target="_blank"
+                rel="noopener noreferrer"
+                data-ocid="featured.primary_button"
+                className="btn-gold inline-flex items-center gap-2 rounded-full px-6 py-2.5 text-sm font-semibold self-start"
+              >
+                Read Article <ArrowRight className="w-4 h-4" />
+              </a>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
 function HomePage() {
   return (
     <>
       <HeroSection />
+      <FeaturedPostSection />
       <ServicesSection />
       <AboutSection />
       <HowItWorksSection />
@@ -1150,11 +1212,25 @@ const adminBlogRoute = createRoute({
   component: AdminBlogPage,
 });
 
+const sitemapXmlRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/sitemap.xml",
+  component: SitemapXmlPage,
+});
+
+const sitemapRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/sitemap",
+  component: SitemapPage,
+});
+
 const routeTree = rootRoute.addChildren([
   homeRoute,
   blogListRoute,
   blogPostRoute,
   adminBlogRoute,
+  sitemapRoute,
+  sitemapXmlRoute,
 ]);
 
 const router = createRouter({ routeTree });

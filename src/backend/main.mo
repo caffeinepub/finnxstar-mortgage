@@ -191,15 +191,15 @@ actor {
     };
   };
 
-  public query ({ caller }) func getAllPosts() : async [BlogPost] {
+  public query func getAllPosts() : async [BlogPost] {
     blogPosts.values().toArray().sort(BlogPost.compareByPublishedAtDesc);
   };
 
-  public query ({ caller }) func getPost(id : Nat) : async ?BlogPost {
+  public query func getPost(id : Nat) : async ?BlogPost {
     blogPosts.get(id);
   };
 
-  public query ({ caller }) func getPostBySlug(slug : Text) : async ?BlogPost {
+  public query func getPostBySlug(slug : Text) : async ?BlogPost {
     switch (slugIndex.get(slug)) {
       case (null) { null };
       case (?id) { blogPosts.get(id) };
@@ -217,6 +217,57 @@ actor {
         slugIndex.remove(existing.slug);
         blogPosts.remove(id);
       };
+    };
+  };
+
+  // Dynamic Sitemap via HTTP
+  func generateSitemapXml() : Text {
+    let baseUrl1 = "https://finnxstar.com";
+    let baseUrl2 = "https://mortgage-broker-dubai-kqq.caffeine.xyz";
+    var xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+    xml #= "<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n";
+    xml #= "  <url><loc>" # baseUrl1 # "/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>\n";
+    xml #= "  <url><loc>" # baseUrl1 # "/blog</loc><changefreq>daily</changefreq><priority>0.8</priority></url>\n";
+    xml #= "  <url><loc>" # baseUrl2 # "/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>\n";
+    xml #= "  <url><loc>" # baseUrl2 # "/blog</loc><changefreq>daily</changefreq><priority>0.8</priority></url>\n";
+    for (post in blogPosts.values()) {
+      xml #= "  <url><loc>" # baseUrl1 # "/blog/" # post.slug # "</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>\n";
+      xml #= "  <url><loc>" # baseUrl2 # "/blog/" # post.slug # "</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>\n";
+    };
+    xml #= "</urlset>";
+    xml
+  };
+
+  public query func http_request(req : {
+    method : Text;
+    url : Text;
+    headers : [(Text, Text)];
+    body : Blob;
+  }) : async {
+    status_code : Nat16;
+    headers : [(Text, Text)];
+    body : Blob;
+    streaming_strategy : Null;
+    upgrade : ?Bool;
+  } {
+    if (req.url == "/sitemap.xml" or req.url.startsWith(#text "/sitemap.xml")) {
+      return {
+        status_code = 200;
+        headers = [
+          ("content-type", "application/xml; charset=utf-8"),
+          ("access-control-allow-origin", "*"),
+        ];
+        body = generateSitemapXml().encodeUtf8();
+        streaming_strategy = null;
+        upgrade = null;
+      };
+    };
+    {
+      status_code = 404;
+      headers = [("content-type", "text/plain")];
+      body = ("Not found" : Text).encodeUtf8();
+      streaming_strategy = null;
+      upgrade = null;
     };
   };
 };

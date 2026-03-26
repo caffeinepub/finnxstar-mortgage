@@ -23,6 +23,7 @@ import {
   CheckCircle2,
   Copy,
   Eye,
+  ImageIcon,
   Loader2,
   Lock,
   LogIn,
@@ -31,9 +32,11 @@ import {
   Plus,
   Search,
   Trash2,
+  Upload,
+  X,
 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { toast } from "sonner";
 import RichTextEditor from "../components/RichTextEditor";
 import { useInternetIdentity } from "../hooks/useInternetIdentity";
@@ -103,6 +106,175 @@ function stripHtml(html: string) {
   const tmp = document.createElement("div");
   tmp.innerHTML = html;
   return tmp.textContent ?? tmp.innerText ?? "";
+}
+
+function resizeImageToBase64(
+  file: File,
+  maxWidth = 1200,
+  quality = 0.82,
+): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        const scale = Math.min(1, maxWidth / img.width);
+        canvas.width = img.width * scale;
+        canvas.height = img.height * scale;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) {
+          reject(new Error("Canvas not supported"));
+          return;
+        }
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL("image/jpeg", quality));
+      };
+      img.onerror = reject;
+      img.src = e.target?.result as string;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+function CoverImageUpload({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+}) {
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+  const [showUrlFallback, setShowUrlFallback] = useState(false);
+
+  async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const dataUrl = await resizeImageToBase64(file);
+      onChange(dataUrl);
+      setShowUrlFallback(false);
+    } catch {
+      toast.error("Failed to process image. Please try a different file.");
+    } finally {
+      setUploading(false);
+      if (fileRef.current) fileRef.current.value = "";
+    }
+  }
+
+  return (
+    <div className="space-y-2">
+      <Label>Cover Image</Label>
+      <input
+        ref={fileRef}
+        type="file"
+        accept="image/jpeg,image/png,image/webp,image/gif"
+        className="hidden"
+        onChange={handleFileChange}
+        data-ocid="admin.upload_button"
+      />
+
+      {value && !value.startsWith("http") ? (
+        // Image preview for uploaded file
+        <div className="relative group rounded-xl overflow-hidden border border-gray-200">
+          <img
+            src={value}
+            alt="Cover preview"
+            className="w-full h-40 object-cover"
+          />
+          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+            <Button
+              type="button"
+              size="sm"
+              onClick={() => fileRef.current?.click()}
+              className="bg-white text-navy hover:bg-gray-100 text-xs"
+            >
+              <Upload className="w-3 h-3 mr-1" /> Replace
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              variant="destructive"
+              onClick={() => onChange("")}
+              className="text-xs"
+            >
+              <X className="w-3 h-3 mr-1" /> Remove
+            </Button>
+          </div>
+        </div>
+      ) : value?.startsWith("http") ? (
+        // Preview for URL-based image
+        <div className="relative group rounded-xl overflow-hidden border border-gray-200">
+          <img
+            src={value}
+            alt="Cover preview"
+            className="w-full h-40 object-cover"
+          />
+          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+            <Button
+              type="button"
+              size="sm"
+              onClick={() => fileRef.current?.click()}
+              className="bg-white text-navy hover:bg-gray-100 text-xs"
+            >
+              <Upload className="w-3 h-3 mr-1" /> Upload instead
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              variant="destructive"
+              onClick={() => onChange("")}
+              className="text-xs"
+            >
+              <X className="w-3 h-3 mr-1" /> Remove
+            </Button>
+          </div>
+        </div>
+      ) : (
+        // Upload dropzone
+        <button
+          type="button"
+          onClick={() => fileRef.current?.click()}
+          className="w-full border-2 border-dashed border-gray-200 rounded-xl p-6 text-center cursor-pointer hover:border-gold/50 hover:bg-gold/5 transition-colors"
+        >
+          {uploading ? (
+            <Loader2 className="w-8 h-8 text-gold animate-spin mx-auto mb-2" />
+          ) : (
+            <ImageIcon className="w-8 h-8 text-gray-300 mx-auto mb-2" />
+          )}
+          <p className="text-sm font-medium text-gray-600">
+            {uploading ? "Processing image..." : "Click to upload cover image"}
+          </p>
+          <p className="text-xs text-gray-400 mt-1">
+            JPG, PNG, WebP, GIF accepted · Max display width 1200px
+          </p>
+        </button>
+      )}
+
+      {/* URL fallback toggle */}
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          onClick={() => setShowUrlFallback((v) => !v)}
+          className="text-xs text-gray-400 hover:text-navy underline underline-offset-2 transition-colors"
+        >
+          {showUrlFallback ? "Hide URL field" : "Or paste an image URL instead"}
+        </button>
+      </div>
+      {showUrlFallback && (
+        <Input
+          data-ocid="admin.input"
+          placeholder="https://example.com/image.jpg"
+          value={value.startsWith("http") ? value : ""}
+          onChange={(e) => onChange(e.target.value)}
+          className="text-sm"
+        />
+      )}
+    </div>
+  );
 }
 
 export default function AdminBlogPage() {
@@ -207,7 +379,7 @@ export default function AdminBlogPage() {
           metaDescription: form.metaDescription,
           metaKeywords: form.metaKeywords,
         });
-        toast.success("Post updated!");
+        toast.success("Post updated! Visit /sitemap to see all posts.");
       } else {
         await createPost.mutateAsync({
           title: form.title,
@@ -221,7 +393,9 @@ export default function AdminBlogPage() {
           metaDescription: form.metaDescription,
           metaKeywords: form.metaKeywords,
         });
-        toast.success("Post published!");
+        toast.success(
+          "Post published! Visit /sitemap to see the live sitemap.",
+        );
       }
       cancelForm();
     } catch {
@@ -395,19 +569,29 @@ export default function AdminBlogPage() {
                   : `${publishedCount} post${publishedCount === 1 ? "" : "s"} published`}
               </p>
             </div>
-            <Button
-              data-ocid="admin.open_modal_button"
-              onClick={showForm ? cancelForm : openCreateForm}
-              className="btn-gold rounded-full px-5 shrink-0"
-            >
-              {showForm ? (
-                "Cancel"
-              ) : (
-                <>
-                  <Plus className="w-4 h-4 mr-1" /> New Post
-                </>
-              )}
-            </Button>
+            <div className="flex items-center gap-2">
+              <a
+                href="/sitemap"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-white/60 hover:text-gold text-sm underline underline-offset-2 shrink-0"
+              >
+                View Live Sitemap →
+              </a>
+              <Button
+                data-ocid="admin.open_modal_button"
+                onClick={showForm ? cancelForm : openCreateForm}
+                className="btn-gold rounded-full px-5 shrink-0"
+              >
+                {showForm ? (
+                  "Cancel"
+                ) : (
+                  <>
+                    <Plus className="w-4 h-4 mr-1" /> New Post
+                  </>
+                )}
+              </Button>
+            </div>
           </div>
         </div>
       </div>
@@ -468,7 +652,7 @@ export default function AdminBlogPage() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     <div className="space-y-1.5">
                       <Label htmlFor="category">Category *</Label>
                       <Select
@@ -502,17 +686,13 @@ export default function AdminBlogPage() {
                         </SelectContent>
                       </Select>
                     </div>
-                    <div className="space-y-1.5">
-                      <Label htmlFor="imageUrl">Cover Image URL</Label>
-                      <Input
-                        id="imageUrl"
-                        data-ocid="admin.input"
-                        placeholder="https://..."
-                        value={form.imageUrl}
-                        onChange={(e) => setField("imageUrl", e.target.value)}
-                      />
-                    </div>
                   </div>
+
+                  {/* Cover Image Upload */}
+                  <CoverImageUpload
+                    value={form.imageUrl}
+                    onChange={(v) => setField("imageUrl", v)}
+                  />
 
                   <div className="space-y-1.5">
                     <Label htmlFor="excerpt">Excerpt *</Label>

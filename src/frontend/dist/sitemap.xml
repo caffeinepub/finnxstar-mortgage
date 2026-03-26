@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- For a live sitemap with all blog posts, visit: https://mortgage-broker-dubai-kqq.caffeine.xyz/sitemap -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://finnxstar.com/</loc>
@@ -19,5 +20,10 @@
     <loc>https://mortgage-broker-dubai-kqq.caffeine.xyz/blog</loc>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mortgage-broker-dubai-kqq.caffeine.xyz/sitemap</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
   </url>
 </urlset>
